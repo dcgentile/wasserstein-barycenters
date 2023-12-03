@@ -27,6 +27,9 @@ def main(refs: int, dim: int):
     d is the dimension of the matrices
     '''
     werenski_test(refs, dim)
+    sample = generate_sample(refs, dim)
+    print(f"Frobenius norm discrepancy between geodesic point\
+    and barycentric approximation: {sample}")
 
 
 def generate_sample(n: int, dim: int):
@@ -58,7 +61,7 @@ def generate_sample(n: int, dim: int):
     # get the index of the smallest eigenvalue, which should
     # correspond to the best approximation of the barycentric coordinates
     # let v be the (normalized) corresponding eigenvector
-    i = np.where(np.isclose(evals, np.min(evals)))
+    i = np.argmin(evals)
     v = np.abs(evecs[i]) / np.linalg.norm(evecs[i], 1)
     b, _ = barycenter(refs, v.T)
     return np.linalg.norm(nt - b)
@@ -83,12 +86,13 @@ def werenski_test(n: int, dim: int):
     a = werenski_matrix(refs, n0)
     evals, evecs = np.linalg.eig(a)
     i = np.argmin(evals)
+    # note that a positive definite matrix has strictly nonnegative eigenvalues
     v = np.abs(evecs[i]) / np.linalg.norm(evecs[i], 1)
     print(f"The recovered barycentric coordinates are:\n {v}\n")
     b, _ = barycenter(refs, v.T)
     diff = np.linalg.norm(n0 - b)
-    print(f"The Frobenius norm difference between recovererd barycenter and its barycentric\
-            approximation is {diff}")
+    print(f"The Frobenius norm difference between recovererd barycenter\
+    and its barycentric approximation is {diff}")
 
 
 if __name__ == "__main__":

@@ -15,8 +15,15 @@ example usage:
 
 python3 main.py 2, 4
 
-result of the example:
-- generates 2 positive definite covariance matrices of size 4 x 4 and a random point in the simplex l0,
-- computes nu = bar({mu_i}, l0)
-- attempts to recover the barycentric coordinates l1 = coords({mu_i}, nu)
-- computes the Frobenius norm of (nu - bar({mu_i}, l1))
+outputs:
+the results of two tests:
+1) a sanity check: if we compute just a single barycenter, we should be able to recover it's barycentric coordinates
+   - generates 2 positive definite covariance matrices of size 4 x 4 and a random point in the simplex l0,
+   - computes nu = bar({mu_i}, l0)
+   - attempts to recover the barycentric coordinates l1 = coords({mu_i}, nu)
+   - computes the Frobenius norm of (nu - bar({mu_i}, l1))
+   - we expect this value to be close to 0
+2) measure the discrepancy between a point along a geodesic connecting two barycenters and the barycentric approximation of that point
+   - compute two barycenters and a point along the induced geodesic (call that point nu)
+   - try to recover the barycentric coordinates l1 of nu
+   - output the Frobenius norm of (nu - bar({mu_i}, l1)). If barycentric sets are closed, we should see small numbers here.
