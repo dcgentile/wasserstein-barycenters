@@ -8,31 +8,30 @@ by approximating the barycentric coordinates of n_t wrt to the family m_i
 if Wasserstein barycenters were geodesically closed, we would (should) see
 0 discrepancy between the two.
 '''
-import random
+import argparse
 import numpy as np
-import gaussbarys
 from gaussbarys import simplex_point, barycenter, werenski_matrix
 
 
-def main():
+parser = argparse.ArgumentParser()
+parser.add_argument("ref_num", type=int)
+parser.add_argument("dim_num", type=int)
+
+args = parser.parse_args()
+
+
+def main(refs: int, dim: int):
     '''
     main routine
+    n is the number of references,
+    d is the dimension of the matrices
     '''
-    iterations = 1
-    dim_lb = 2
-    dim_ub = 10
-    ref_lb = 3
-    ref_ub = 6
-    for _ in range(iterations):
-        dim_int = random.randint(dim_lb, dim_ub)
-        ref_int = random.randint(ref_lb, ref_ub)
-        print(f"Number of reference measures: {ref_int}")
-        print(f"Dimesion of matrices: {dim_int}")
-        gaussbarys.werenski_test(ref_int, dim_int)
+    werenski_test(refs, dim)
 
 
 def generate_sample(n: int, dim: int):
     '''
+    currently unused
     n is the number of reference measures to generate
     dim is the size of the matrices
     returns the l2 norm of the difference between the
@@ -83,21 +82,14 @@ def werenski_test(n: int, dim: int):
     n0, _ = barycenter(refs, l0)
     a = werenski_matrix(refs, n0)
     evals, evecs = np.linalg.eig(a)
-    barys = []
-    for value, vector in zip(evals, evecs):
-        coords = vector / np.linalg.norm(vector, 1)
-        barys.append((coords, value))
-
-    for bary in barys:
-        coords = bary[0]
-        print(f"Candidate barycentric coordinates for \
-                eigenvalue {bary[1]} are:\n {coords}\n")
-        # sign_total = np.sum(np.sign(coords))
-        # if sign_total in (-n, n):
-        # print(f"Candidate barycentric coordinates are:\n {bary}\n")
-        # else:
-        # print("No candidate coordinates found!")
+    i = np.argmin(evals)
+    v = np.abs(evecs[i]) / np.linalg.norm(evecs[i], 1)
+    print(f"The recovered barycentric coordinates are:\n {v}\n")
+    b, _ = barycenter(refs, v.T)
+    diff = np.linalg.norm(n0 - b)
+    print(f"The Frobenius norm difference between recovererd barycenter and its barycentric\
+            approximation is {diff}")
 
 
 if __name__ == "__main__":
-    main()
+    main(args.ref_num, args.dim_num)

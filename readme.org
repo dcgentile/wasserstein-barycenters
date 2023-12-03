@@ -8,3 +8,15 @@ gaussbarys.py contains the functions necessary for the computations, that is
 - an implementation of the iterative scheme for approximating a Wasserstein barycenter as described in Alvarez-Esteban et al. (2016)
 - an implementation of the scheme described in Werenski et al. (2022) for recovering barycentric coordinates of a target measure given a set of references
   rather than solving the quadratic program described in that paper, we instead search for eigenvectors with eigenvalue 0
+
+currently main requires two command line arguments: the number of reference measures to generate, and the dimension of the matrices
+
+example usage:
+
+python3 main.py 2, 4
+
+result of the example:
+- generates 2 positive definite covariance matrices of size 4 x 4 and a random point in the simplex l0,
+- computes nu = bar({mu_i}, l0)
+- attempts to recover the barycentric coordinates l1 = coords({mu_i}, nu)
+- computes the Frobenius norm of (nu - bar({mu_i}, l1))
