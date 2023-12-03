@@ -1,0 +1,10 @@
+#+title: Readme
+#+author: David Gentile
+#+date: <2023-12-03 Sun>
+
+This repository contains code which mostly serves as an exercise in using iterative methods to approximate Wasserstein barycenters and to consider the question of geodesic closure of a set of such barycenters for a fixed family of (centered Gaussian) measures.
+
+gaussbarys.py contains the functions necessary for the computations, that is
+- an implementation of the iterative scheme for approximating a Wasserstein barycenter as described in Alvarez-Esteban et al. (2016)
+- an implementation of the scheme described in Werenski et al. (2022) for recovering barycentric coordinates of a target measure given a set of references
+  rather than solving the quadratic program described in that paper, we instead search for eigenvectors with eigenvalue 0
