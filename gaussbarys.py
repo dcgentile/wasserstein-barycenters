@@ -9,7 +9,7 @@ from numpy.linalg import inv
 from scipy.linalg import sqrtm
 
 
-def barycenter(refs: np.ndarray, coords: np.ndarray, steps: int = 16):
+def barycenter(refs: list, coords: np.ndarray, steps: int = 16):
     '''
     assumes that:
     refs is a list of n x n PSD matrices
