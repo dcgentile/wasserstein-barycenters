@@ -35,22 +35,49 @@ args = parser.parse_args()
 IMG_PATH='./img/'
 
 def main(p: int,
-         dim: int,
+         d: int,
          iterations=100,
          prange=10,
-         dimrange=10,
+         drange=10,
          job=None):
     '''
     main routine
-    n is the number of references,
+    p is the number of references,
     d is the dimension of the matrices
     '''
-    if job=='p':
-        pcomplexity_graphs(dim,iterations, prange,)
+    if job =='p':
+        pcomplexity_graphs(d,iterations, prange,)
     elif job == 'd':
-        dcomplexity_graphs(p, iterations, dimrange)
+        dcomplexity_graphs(p, iterations, drange)
+    elif job == 'n':
+        stats = avg_null_test(p, d, iterations)
+        print(f"mean deviation in Frobenius norm from barycentric approximant: {stats[0]}")
+        print(f"standard deviation in Frobenius norm from barycentric approximant: {stats[1]}")
     else:
-        print_to_cli(p, dim, iterations)
+        print_to_cli(p, d, iterations)
+
+
+def generate_refs(p: int, dim: int):
+    refs = []
+    for _ in range(p):                      # generate some covariance matrices
+        x = np.random.rand(dim, dim)
+        refs.append((0.5 * (x + x.T)) + dim * np.identity(dim))
+    return refs
+
+
+def null_test(p: int, dim:int):
+    refs = generate_refs(p, dim)
+    ex_ref = generate_refs(1, dim)[0]
+    a = werenski_matrix(refs, ex_ref)
+    evals, evecs = np.linalg.eig(a)
+    i = np.argmin(evals)
+    approx_lambda = np.abs(evecs[:, i] / np.linalg.norm(evecs[:, i], 1))
+    b, _ = barycenter(refs, approx_lambda)
+    return np.linalg.norm(ex_ref - b)
+
+def avg_null_test(p: int, dim:int, its=100):
+    results = np.array([null_test(p, dim) for _ in range(its)])
+    return (np.mean(results), np.std(results))
 
 
 def dcomplexity_graphs(p: int, iterations: int, drange: int):
@@ -72,8 +99,6 @@ def pcomplexity_graphs(
     ax.scatter(xp, yp)
     ax.set(xlim=(0,prange), xticks=np.arange(1,prange))
     plt.savefig(output_path)
-
-
 
 
 def print_to_cli(p: int, dim:int, iterations: int):
@@ -101,10 +126,7 @@ def generate_sample(p: int, dim: int, method=None):
     and the barycenter obtained with the approximate barycentric
     coordinates of that point on the geodesic
     '''
-    refs = []
-    for _ in range(p):                      # generate some covariance matrices
-        x = np.random.rand(dim, dim)
-        refs.append((0.5 * (x + x.T)) + dim * np.identity(dim))
+    refs = generate_refs(p, dim)
     simp_points = (simplex_point(p), simplex_point(p))
     t = simplex_point(2)
     n0, _ = barycenter(refs, simp_points[0])
@@ -169,9 +191,11 @@ def eigen_method(p: int, dim: int):
 
 
 if __name__ == "__main__":
-    main(args.ref_num,
-         args.dim_num,
-         args.iteration_num,
-         args.prange,
-         args.dimrange,
-         args.job)
+    if args.job == 'pcomplex':
+        pass
+    elif args.job == 'dcomplex':
+        pass
+    elif args.job == 'nulltest':
+        main(args.ref_num, args.dim_num, job='n')
+    else:
+        pass
