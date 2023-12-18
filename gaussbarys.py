@@ -22,12 +22,10 @@ def barycenter(refs: list, coords: np.ndarray, steps: int = 16):
     '''
     iden = np.identity(refs[0].shape[0])
     old_approximant = barycentric_stepper(iden, refs, coords)
-    norms = []
     for _ in range(steps):
         new_approximant = barycentric_stepper(old_approximant, refs, coords)
-        norms.append(np.linalg.norm(new_approximant - old_approximant))
         old_approximant = new_approximant
-    return new_approximant, norms
+    return new_approximant
 
 
 def barycentric_stepper(sn: np.ndarray, refs: np.ndarray, weights: np.ndarray):
@@ -93,10 +91,3 @@ def werenski_matrix(refs: np.ndarray, targ: np.ndarray):
     return out
 
 
-def simplex_point(n: int):
-    '''
-    helper function to generate a random point in the n-simplex
-    by default rand generates draws uniformly from (0,1)
-    '''
-    vec = np.random.rand(n, 1)
-    return vec / np.linalg.norm(vec, 1)

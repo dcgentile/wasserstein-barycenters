@@ -17,6 +17,7 @@ from tqdm import tqdm
 from os import path
 from gaussian_utilities import opt_lam_grad_norm
 from gaussbarys import simplex_point, barycenter, werenski_matrix
+from utils import generate_refs
 
 sqrtm = sp.linalg.sqrtm
 inv = sp.linalg.inv
@@ -55,14 +56,6 @@ def main(p: int,
         print(f"standard deviation in Frobenius norm from barycentric approximant: {stats[1]}")
     else:
         print_to_cli(p, d, iterations)
-
-
-def generate_refs(p: int, dim: int):
-    refs = []
-    for _ in range(p):                      # generate some covariance matrices
-        x = np.random.rand(dim, dim)
-        refs.append((0.5 * (x + x.T)) + dim * np.identity(dim))
-    return refs
 
 
 def null_test(p: int, dim:int):
